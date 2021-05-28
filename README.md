@@ -114,6 +114,9 @@ function generateAnimals() {
 }
 ````
 
+Pour tester qu'on reçoit bien notre json d'animaux il suffit de lancer un container après avoir construit l'image docker et de lancer un netcat sur le port 3000.
+Ensuite il suffit de lancer la requête HTTP suivante `GET / HTTP/1.0` faire 2 retours à la ligne et remarquer que nous avons reçu un json d'animaux.
+
 ## Step 3: Reverse proxy with apache (static configuration)
 ### branche : fb-express-dynamic
 
