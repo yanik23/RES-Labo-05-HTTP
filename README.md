@@ -1,7 +1,7 @@
 # RES-Labo-05-HTTP
 Laboratoire HTTP Infrastructure du cours RES
 
-##Step 1: Static HTTP server with apache httpd
+## Step 1: Static HTTP server with apache httpd
 #### branche : fb-apache-static
 
 Dans cette étape nous devions configurer un serveur http statique.
