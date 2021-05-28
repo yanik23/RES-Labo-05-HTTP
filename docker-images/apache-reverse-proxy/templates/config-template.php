@@ -29,8 +29,8 @@
 	</Proxy>
 	
 	
-	ProxyPass '/api/students/' 'balancer://dynamicBalancer/'
-	ProxyPassReverse '/api/students/' 'balancer://dynamicBalancer/'
+	ProxyPass '/api/animals/' 'balancer://dynamicBalancer/'
+	ProxyPassReverse '/api/animals/' 'balancer://dynamicBalancer/'
 	
 	ProxyPass '/' 'balancer://staticBalancer/'
 	ProxyPassReverse '/' 'balancer://staticBalancer/'
