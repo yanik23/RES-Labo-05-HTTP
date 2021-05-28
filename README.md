@@ -59,7 +59,60 @@ Pour installer les modules il suffit de se mettre dans le dossier où l'on souha
 - `npm install express -- save`
 - `npm install express-generator -g` (ici -g car on veut une installation générale car on va utiliser souvent ce module dans le future.
 
+Maintenant créeons un fichier `index.js` dans notre dossier `/src` qui va nous retourner notre json d'animaux (un choix fait par nous, on aurait pu aussi retourner des étudiants, chats ou autre) :
+```js
+  
+var Chance = require('chance');
+var chance = new Chance();
 
+//console.log("Bonjour " + chance.name())
+
+var express = require('express');
+var app = express();
+
+
+app.get('/test', function(req, res){
+	res.send("Hello RES - test");
+});
+
+
+app.get('/', function(req, res){
+	res.send(generateAnimals());
+});
+
+app.listen(3000, function() {
+	console.log('Accepting HTTP requests on port 3000.');
+});
+
+function generateAnimals() {
+	var numberOfAnimals = chance.integer({
+		min: 0,
+		max: 10
+	});
+	console.log(numberOfAnimals);
+	var animals = []
+	for(var i = 0; i < numberOfAnimals; i++){
+		
+		var gender = chance.gender();
+		var birthYear = chance.year({
+			min: 2000,
+			max: 2020
+		});
+		animals.push({
+			name: chance.first({
+				gender: gender
+			}),
+			type : chance.animal(),
+			gender: gender,
+			birthday: chance.birthday({
+				year: birthYear
+			})
+		});
+	};
+	console.log(animals);
+	return animals;
+}
+````
 
 ## Step 3: Reverse proxy with apache (static configuration)
 ### branche : fb-express-dynamic
