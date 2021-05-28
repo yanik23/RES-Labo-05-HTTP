@@ -119,6 +119,7 @@ Ensuite il suffit de lancer la requête HTTP suivante `GET / HTTP/1.0` faire 2 r
 
 ## Step 3: Reverse proxy with apache (static configuration)
 ### branche : fb-express-dynamic
+Dans cette partie nous devions implémenter un reverse proxy apache (en configuration static)
 
 
 
