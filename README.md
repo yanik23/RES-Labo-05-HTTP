@@ -20,10 +20,16 @@ Pour le contenu web on a choisi le template html [suivant](https://startbootstra
 
 Ensuite il suffit d'ouvrir un terminal dans le dossier où se trouve notre **Dockerfile** et de construire l'image :
 ```
-docker build -t res/apache_static .
+docker build -t res/apache_php .
 ```
 Et de lancer on container en mappant un port au port http 80:
 ```
-docker run -it -p 8080:80 res/apache_static
+docker run -it -p 8080:80 res/apache_php
 ```
 Maintenant si on ouvre un navigateur web et on écrit ``` localhost:8080``` on devrait avoir notre site html qui devrait s'afficher.
+
+
+
+## Step 2: Dynamic HTTP server with express.js
+#### branche : fb-express-dynamic
+
