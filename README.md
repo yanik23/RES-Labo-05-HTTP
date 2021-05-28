@@ -5,7 +5,7 @@ Laboratoire HTTP Infrastructure du cours RES
 #### branche : fb-apache-static
 
 Dans cette étape nous devions configurer un serveur http statique.
-Pour commencer nous avons créer un dossier **/apache-php-image** qui contiendra tout ce qui est nécessaire pour pouvoir créer une image docker d'un serveur http statique. 
+Pour commencer nous avons crée un dossier **/apache-php-image** qui contiendra tout ce qui est nécessaire pour pouvoir créer une image docker d'un serveur http statique. 
 Toujours dans notre dossier **/apache-php-image** nous avons crée notre fichier **Dockerfile** et un dossier **/content** qui contiendra un template web.
 
 Pour le **Dockerfile** nous avons pris l'image officielle php [suivante](https://hub.docker.com/_/php). Notre **Dockerfile** ressemble à quelque chose comme ceci :
@@ -32,4 +32,8 @@ Maintenant si on ouvre un navigateur web et on écrit ``` localhost:8080``` on d
 
 ## Step 2: Dynamic HTTP server with express.js
 #### branche : fb-express-dynamic
+
+Dans cette étape nous devions configurer un serveur http dynamique.
+Pour commencer nous avons crée un nouveau dossier ```/express-image``` qui contiendra tout ce qui est nécessaire pour notre image docker du serveur http dynamique.
+
 
