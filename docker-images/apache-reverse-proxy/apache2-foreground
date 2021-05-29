@@ -24,4 +24,4 @@ echo "php template got loaded in config"
 rm -f "$APACHE_PID_FILE"
 
 
-exec apache2 -DFOREGROUND "$@"
+exec  apache2 -DFOREGROUND 

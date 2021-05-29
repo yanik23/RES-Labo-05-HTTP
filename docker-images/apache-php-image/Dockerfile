@@ -6,3 +6,8 @@ RUN apt-get update && \
 COPY content/ /var/www/html/
 
 COPY serf /usr/local/bin
+
+
+
+
+
