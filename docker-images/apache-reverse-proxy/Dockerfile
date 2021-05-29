@@ -17,3 +17,4 @@ RUN ["chmod", "+x", "/usr/local/bin/apache2-foreground"]
 RUN ["chmod", "+x", "/usr/local/bin/event_handler.sh"]
 
 
+RUN chmod +x /usr/local/bin/serf

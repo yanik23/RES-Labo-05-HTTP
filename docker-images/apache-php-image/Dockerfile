@@ -7,6 +7,7 @@ COPY content/ /var/www/html/
 
 COPY serf /usr/local/bin
 
+RUN chmod +x /usr/local/bin/serf
 
 
 
