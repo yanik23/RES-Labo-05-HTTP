@@ -37,28 +37,24 @@ apache_rp_ip=$(docker inspect apache_rp --format '{{range .NetworkSettings.Netwo
 
 echo "starting serf agents"
 
-docker exec apache_rp serf agent -bind=$apache_rp_ip -log-level=debug -event-handler="/usr/local/bin/event_handler.sh" &
+docker exec apache_rp serf agent -bind=$apache_rp_ip -log-level=debug -event-handler="user=/usr/local/bin/clusterHandler.sh" -event-handler=member-failed="/usr/local/bin/failHandler.sh" &
 
 for i in 1 2 3 4
 do
-    docker exec static$i serf agent -node=serf-agent-static$i -bind=${static_ip_array[$i]} &
-done
-
-for i in 1 2 3 4
-do
-
-    docker exec  dynamic$i serf agent -node=serf-agent-dynamic$i -bind=${dynamic_ip_array[$i]} &
-
-done
-
-for i in 1 2 3 4
-do
-    docker exec dynamic$i serf join $apache_rp_ip
-    #update load balancers
-
+    stat=$(docker inspect static$i --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')
+    docker exec static$i serf agent -node=serf-agent-static$i -bind=$stat &
+    sleep 2
     docker exec static$i serf join $apache_rp_ip
+    echo $stat
+    docker exec static$i serf event static-join '\'$stat
+    sleep 2
+
+    dyn=$(docker inspect dynamic$i --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')
+    docker exec  dynamic$i serf agent -node=serf-agent-dynamic$i -bind=$dyn &
+    sleep 2
+    docker exec dynamic$i serf join $apache_rp_ip
+     
+    docker exec static$i serf event dynamic-join '\'$dyn
+    sleep 2
     #update load balancers
-
 done
-
-
