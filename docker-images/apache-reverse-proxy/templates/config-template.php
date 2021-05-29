@@ -15,7 +15,7 @@
 	<Proxy balancer://dynamicBalancer>
 <?php
 	foreach ($dynamic_app as &$dynamicIp){
-		echo "	BalancerMember http://". $dynamicIp . "\n";
+		echo "	BalancerMember http://". $dynamicIp . ":3000\n";
 	}
 ?>
 	</Proxy>
@@ -23,7 +23,7 @@
 	<Proxy balancer://staticBalancer>
 <?php
 	foreach ($static_app as &$staticIp){
-		echo "	BalancerMember http://". $staticIp . "\n";
+		echo "	BalancerMember http://". $staticIp . ":80\n";
 	}
 ?>
 	</Proxy>
