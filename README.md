@@ -144,11 +144,11 @@ configurer notre site pour qu'il utilise le reverse proxy
 ```
 
 
-## construire les images docker
+## construire les images docker depuis la racine 
 ```
-Docker build -t res/jl_apache_php .
-Docker build -t res/jl_express_dynamic .
-Docker build -t res/jl_apache_rp .
+Docker build -t res/jl_apache_php docker-images/apache-php-image/
+Docker build -t res/jl_express_dynamic docker-images/express-image/
+Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
 ## demarer les conteneur
@@ -171,7 +171,46 @@ configurer notre site comme cela est très hasardeux car supposon que l'on déma
 ## Step 4: AJAX requests with JQuery
 ### branche : fb-ajax-jquery
 
+## construire les images docker depuis la racine 
+```
+Docker build -t res/jl_apache_php docker-images/apache-php-image/
+Docker build -t res/jl_express_dynamic docker-images/express-image/
+Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
+```
 
+## demarer les conteneur
+__Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut demarer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker
+```
+Docker run -d --name jl_static res/jl_apache_php
+Docker run -d --name jl_dynamic res/jl_express_dynamic
+Docker run -d -p 8080:80 -p 3000:3000 --name jl_apache_rp res/jl_apache_rp
+
+```
+pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.ch:8080
+
+on va envoyer une requete a notre serveur dynamique toute les 2 secondes, ensuite on récupère le premier élément de notre objet json retourné. Et on l'affecte dans notre page HTML
+dans notre cas les balises contenant la classe `.masthead-subheading` auront leurs contenu remplacé par des animeaux (:
+
+```js
+(function ($) {
+	console.log("Loading animals");
+	
+	function loadAnimals() {
+		$.getJSON("/api/animals/", function(animals) {
+			console.log(animals);
+			var message = "Nobody is here";
+			
+			if(animals.length > 0) {
+				message = animals[0].name + " the " + animals[0].type;
+			}
+			$(".masthead-subheading").text(message);
+		});
+	};
+	
+	loadAnimals();
+	setInterval(loadAnimals, 2000);
+})(jQuery);
+```
 
 ## Step 5: Dynamic reverse proxy configuration
 ### branche : fb-dynamic-configuration
