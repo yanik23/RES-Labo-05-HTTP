@@ -17,7 +17,7 @@ echo "Setup for the RES lab..."
 echo "Static app URL: $STATIC_APP"
 echo "Dynamic app URL: $DYNAMIC_APP"
 php /var/apache2/templates/config-template.php > /etc/apache2/sites-available/001-reverse-proxy.conf
-
+echo "php template got loaded in config"
 # Apache gets grumpy about PID files pre-existing
 : "${APACHE_RUN_DIR:=/var/run/apache2}"
 : "${APACHE_PID_FILE:=$APACHE_RUN_DIR/apache2.pid}"

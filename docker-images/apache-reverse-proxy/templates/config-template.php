@@ -1,13 +1,38 @@
 <?php
-	$dynamic_app = getenv('DYNAMIC_APP');
-	$static_app = getenv('STATIC_APP');
+
+	$dynamic_app = explode(',', getenv('DYNAMIC_APP'));
+	$static_app = explode(',', getenv('STATIC_APP'));
+	
+	//$dynamic_app = getenv('DYNAMIC_APP');
+	//$static_app = getenv('STATIC_APP');
 ?>
 <VirtualHost *:80>
 	ServerName demo.res.ch
 	
-	ProxyPass '/api/animals/' 'http://<?php print "$dynamic_app"?>/'
-	ProxyPassReverse '/api/animals/' 'http://<?php print "$dynamic_app"?>/'
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
 	
-	ProxyPass '/' 'http://<?php print "$static_app"?>/'
-	ProxyPassReverse '/' 'http://<?php print "$static_app"?>/'	
+	<Proxy balancer://dynamicBalancer>
+<?php
+	foreach ($dynamic_app as &$dynamicIp){
+		echo "	BalancerMember http://". $dynamicIp . "\n";
+	}
+?>
+	</Proxy>
+	
+	<Proxy balancer://staticBalancer>
+<?php
+	foreach ($static_app as &$staticIp){
+		echo "	BalancerMember http://". $staticIp . "\n";
+	}
+?>
+	</Proxy>
+	
+	
+	ProxyPass '/api/animals/' 'balancer://dynamicBalancer/'
+	ProxyPassReverse '/api/animals/' 'balancer://dynamicBalancer/'
+	
+	ProxyPass '/' 'balancer://staticBalancer/'
+	ProxyPassReverse '/' 'balancer://staticBalancer/'
+	
 </VirtualHost>
