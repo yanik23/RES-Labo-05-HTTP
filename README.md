@@ -121,6 +121,51 @@ Ensuite il suffit de lancer la requête HTTP suivante `GET / HTTP/1.0` faire 2 r
 ### branche : fb-express-dynamic
 Dans cette partie nous devions implémenter un reverse proxy apache (en configuration static)
 
+configuration de base 
+pour configurer un simple reverse proxy il faut avoir les modules apache correct instalé
+ces derniers sont activé via le docker file 
+```
+RUN a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests
+RUN a2ensite 000-* 001-*
+```
+
+configurer notre site pour qu'il utilise le reverse proxy
+```
+<VirtualHost *:80>
+	ServerName demo.res.ch
+	
+	ProxyPass "/api/students/" "http://172.17.0.3:3000/"
+	ProxyPassReverse "/api/students/" "http://172.17.0.3:3000/"
+	
+	ProxyPass "/" "http://172.17.0.2:80/"
+	ProxyPassReverse "/" "http://172.17.0.2:80/"	
+</VirtualHost>
+
+```
+
+
+## construire les images docker
+```
+Docker build -t res/jl_apache_php .
+Docker build -t res/jl_express_dynamic .
+Docker build -t res/jl_apache_rp .
+```
+
+## demarer les conteneur
+__Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut demarer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker
+```
+Docker run -d --name jl_static res/jl_apache_php
+Docker run -d --name jl_dynamic res/jl_express_dynamic
+Docker run -d -p 8080:80 -p 3000:3000 --name jl_apache_rp res/jl_apache_rp
+
+```
+
+pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.ch:8080
+
+on peut effectivement voir aussi si on tente d'accéder aux serveurs statique et dynamique individuellement, ça ne marche pas.
+
+## Mauvaise idée de configurer un site comme cela
+configurer notre site comme cela est très hasardeux car supposon que l'on démarre d'autre conteneur dans docker les adresses IP seront différente, alors il faudrai a chaque fois changer les adresses dans le fichier config de notre site pour qu'il soient à jour.
 
 
 ## Step 4: AJAX requests with JQuery
