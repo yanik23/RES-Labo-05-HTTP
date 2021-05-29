@@ -6,6 +6,7 @@ RUN apt-get update && \
 COPY apache2-foreground /usr/local/bin/
 COPY templates /var/apache2/templates
 COPY conf/ /etc/apache2
+COPY serf /usr/local/bin
 
 RUN a2enmod proxy proxy_http
 RUN a2ensite 000-* 001-*

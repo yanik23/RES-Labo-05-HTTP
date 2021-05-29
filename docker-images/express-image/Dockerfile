@@ -5,4 +5,6 @@ RUN apt-get update && \
 	
 COPY src /opt/app
 
+COPY serf /usr/local/bin
+
 CMD ["node", "/opt/app/index.js"]
