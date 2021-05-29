@@ -214,6 +214,47 @@ dans notre cas les balises contenant la classe `.masthead-subheading` auront leu
 
 ## Step 5: Dynamic reverse proxy configuration
 ### branche : fb-dynamic-configuration
+## construire les images docker depuis la racine 
+```
+Docker build -t res/jl_apache_php docker-images/apache-php-image/
+Docker build -t res/jl_express_dynamic docker-images/express-image/
+Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
+```
+
+## demarer les conteneur
+__Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut demarer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker
+```
+Docker run -d --name jl_static res/jl_apache_php
+Docker run -d --name jl_dynamic res/jl_express_dynamic
+Docker run -d -e STATIC_APP=172.17.0.3 -e DYNAMIC_APP=172.17.0.2 -p 8080:80 -p 3000:3000 --name jl_apache_rp res/jl_apache_rp
+
+```
+pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.ch:8080
+
+## configuration
+pour cette étape on dois creer des variables d'environnement dans notre conteneur. `STATIC_APP` et `DYNAMIC_APP`, ces dernier sont créer avec les paramètre -e lors d'un `docker run`
+
+en exécutant le fichier apache2-foreground on va exécuter le code php au démarage de notre conteneur, et écrire dans le fichier de configuration de notre site web, les adresses IP pour notre proxy seront alors injecté correctement.
+
+
+
+## fichier template
+```php
+<?php
+	$dynamic_app = getenv('DYNAMIC_APP');
+	$static_app = getenv('STATIC_APP');
+?>
+<VirtualHost *:80>
+	ServerName demo.res.ch
+	
+	ProxyPass '/api/animals/' 'http://<?php print "$dynamic_app"?>/'
+	ProxyPassReverse '/api/animals/' 'http://<?php print "$dynamic_app"?>/'
+	
+	ProxyPass '/' 'http://<?php print "$static_app"?>/'
+	ProxyPassReverse '/' 'http://<?php print "$static_app"?>/'	
+</VirtualHost>
+```
+
 
 ## Additional Setps : Load balancing multiple server nodes
 ### branche : fb-load-balancer
