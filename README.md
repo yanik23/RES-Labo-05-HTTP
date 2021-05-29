@@ -156,7 +156,7 @@ __Attention__ on considère que il ya aucun autre conteneur de démarré, pour q
 ```
 Docker run -d --name jl_static res/jl_apache_php
 Docker run -d --name jl_dynamic res/jl_express_dynamic
-Docker run -d -p 8080:80 -p 3000:3000 --name jl_apache_rp res/jl_apache_rp
+Docker run -d -p 8080:80 --name jl_apache_rp res/jl_apache_rp
 
 ```
 
@@ -226,7 +226,7 @@ __Attention__ on considère que il ya aucun autre conteneur de démarré, pour q
 ```
 Docker run -d --name jl_static res/jl_apache_php
 Docker run -d --name jl_dynamic res/jl_express_dynamic
-Docker run -d -e STATIC_APP=172.17.0.3 -e DYNAMIC_APP=172.17.0.2 -p 8080:80 -p 3000:3000 --name jl_apache_rp res/jl_apache_rp
+Docker run -d -e STATIC_APP=172.17.0.3 -e DYNAMIC_APP=172.17.0.2 -p 8080:80 --name jl_apache_rp res/jl_apache_rp
 
 ```
 pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.ch:8080
