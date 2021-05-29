@@ -32,7 +32,7 @@ dynamic_ips=${dynamic_ips%,}
 
 echo "starting reverse proxy"
 echo $dynamic_ips
-docker run -d -e STATIC_APP=$static_ips -e DYNAMIC_APP=$dynamic_ips -p 8080:80 -p 3000:3000 --name apache_rp res/jl_apache_rp
+docker run -d -e STATIC_APP=$static_ips -e DYNAMIC_APP=$dynamic_ips -p 8080:80  --name apache_rp res/jl_apache_rp
 apache_rp_ip=$(docker inspect apache_rp --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}')
 
 echo "starting serf agents"
