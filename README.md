@@ -311,6 +311,7 @@ En exécutant le fichier `apache2-foreground` on va exécuter le code php au dé
 
 ## Additional Setps : Load balancing multiple server nodes
 *  __branche : fb-load-balancer__
+
 Pour cette étape bonus nous nous sommes basé sur la documentation officielle apache de leurs [load balancer](https://httpd.apache.org/docs/2.4/fr/mod/mod_proxy_balancer.html)
 La documentation nous demande d'importer 3 modules nécessaire (`mod_proxy`, `mod_proxy_balancer` et un algorithme de planification de la répartition de tâche). Donc nous allons ajouter ces modules à notre `Dockerfile` de notre **reverse proxy** :
 
