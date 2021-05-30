@@ -161,16 +161,22 @@ Ensuite il suffit de lancer la requête HTTP suivante `GET / HTTP/1.0` faire 2 r
 
 ## Step 3: Reverse proxy with apache (static configuration)
 * __branche : fb-apache-reverse-proxy__
-Dans cette partie nous devions implémenter un reverse proxy apache (en configuration static)
+Dans cette partie nous devions implémenter un reverse proxy apache (en configuration static). Nous avons créer un nouveau dossier `apache-reverse-proxy` à côté des 2 autres dossiers.
 
 pour configurer le reverse proxy nous avons de nouveau la [documentation apache](https://httpd.apache.org/docs/2.4/fr/howto/reverse_proxy.html) fourni. La documentation dit qu'il faut avoir les modules `mod_proxy` et `mod_proxy_balancer` d'apache correctement installés.
 Ces derniers sont activés via le `Dockerfile` 
 ```
-RUN a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests
+FROM php:7.2-apache
+
+COPY conf/ /etc/apache2
+
+RUN a2enmod proxy proxy_http
 RUN a2ensite 000-* 001-*
 ```
 
-configurer notre site pour qu'il utilise le reverse proxy
+Donc nous remarquons dans notre `/Dockerfile` qu'on a aura besoin d'un dossier `/config` avec à l'intérieur les fichiers config pour notre reverse proxy.
+
+configurer notre site pour qu'il utilise le reverse proxy dans le fichier `001-reverse-proxy.conf` :
 ```
 <VirtualHost *:80>
 	ServerName demo.res.ch
@@ -202,7 +208,8 @@ Docker run -d -p 8080:80 --name jl_apache_rp res/jl_apache_rp
 
 ```
 
-Il faudra également faire une modification DNS sur notre OS (fichier `hosts` sous Windows) pour mapper notre addresse `demo.res.ch` à notre adresse local `127.0.0.1`. UNe fois la modification faite on peut désormais accéder à notre site avec l'url suivante `demo.res.ch:8080`
+Il faudra également faire une modification DNS sur notre OS (fichier `hosts` sous Windows) pour mapper notre addresse `demo.res.ch` à notre adresse local `127.0.0.1`. UNe fois la modification faite on peut désormais accéder à notre site avec l'URL suivante : `demo.res.ch:8080`
+On peut également accéder à notre payload JSON avec l'URL suivante : `demo.res.ch:8080/api/animals/`
 
 on peut effectivement voir aussi que si on essaye d'accéder aux serveurs statique et dynamique individuellement, ça ne marche pas.
 
