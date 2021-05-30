@@ -35,8 +35,8 @@ Maintenant si on ouvre un navigateur web et on écrit ``` localhost:8080``` on d
 #### branche : fb-express-dynamic
 
 Dans cette étape nous devions configurer un serveur http dynamique.
-Pour commencer nous avons crée un nouveau dossier ```/express-image``` de nouveau dans le dossier **/docker-images** qui contiendra tout ce qui est nécessaire pour notre image docker du serveur **http dynamique**.
-Dans ce dossier nous avons crée comme avant un **Dockerfile** et avons pris l'image docker officielle [node.js](https://hub.docker.com/_/node) :
+Pour commencer nous avons crée un nouveau dossier ```/express-image``` de nouveau dans le dossier `/docker-images` qui contiendra tout ce qui est nécessaire pour notre image docker du serveur **http dynamique**.
+Dans ce dossier nous avons crée comme avant un `Dockerfile` et avons pris l'image docker officielle [node.js](https://hub.docker.com/_/node) :
 
 ```
 FROM node:14.17.0
@@ -47,7 +47,7 @@ COPY src /opt/app
 CMD ["node", "/opt/app/index.js"]
 ```
 
-Comme dans le `Dockerfile` on copie le contenu du dossier `/src` vers `/opt/app` il faudra avoir crée au préalable le dossier **/src** dans le même dossier que le **Dockerfile**. Il faut également avoir installé [node.js](https://nodejs.org/en/).
+Comme dans le `Dockerfile` on copie le contenu du dossier `/src` vers `/opt/app` il faudra avoir crée au préalable le dossier `/src` dans le même dossier que le `Dockerfile`. Il faut également avoir installé [node.js](https://nodejs.org/en/).
 Une fois ceci fait on peut lancer la commande (dans un terminal) ```npm init``` dans le dossier où l'on souhaite installer notre package (ici ça sera notre dossier `/src`). 
 En plus d'avoir installé node.js il nous faudra quelques compléments comme :
 
