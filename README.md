@@ -59,7 +59,7 @@ En plus d'avoir installé node.js il nous faudra quelques compléments comme :
  
 Pour installer les modules il suffit de se mettre dans le dossier où l'on souhaite les installer (dossier **/src** dans notre cas) et on lance les commandes :
 - `npm install chance --save `
-- `npm install express -- save`
+- `npm install express --save`
 - `npm install express-generator -g` (ici -g car on veut une installation générale car on va utiliser souvent ce module dans le future.
 
 Maintenant créeons un fichier `index.js` dans notre dossier `/src` qui va nous retourner notre json d'animaux (un choix fait par nous, on aurait pu aussi retourner des étudiants, chats ou autre) :
