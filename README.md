@@ -163,9 +163,8 @@ Ensuite il suffit de lancer la requête HTTP suivante `GET / HTTP/1.0` faire 2 r
 * __branche : fb-apache-reverse-proxy__
 Dans cette partie nous devions implémenter un reverse proxy apache (en configuration static)
 
-configuration de base 
-pour configurer un simple reverse proxy il faut avoir les modules apache correctement installés
-ces derniers sont activés via le `Dockerfile` 
+pour configurer le reverse proxy nous avons de nouveau la [documentation apache](https://httpd.apache.org/docs/2.4/fr/howto/reverse_proxy.html) fourni. La documentation dit qu'il faut avoir les modules `mod_proxy` et `mod_proxy_balancer` d'apache correctement installés.
+Ces derniers sont activés via le `Dockerfile` 
 ```
 RUN a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests
 RUN a2ensite 000-* 001-*
