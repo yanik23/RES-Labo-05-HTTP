@@ -227,18 +227,19 @@ Docker build -t res/jl_express_dynamic docker-images/express-image/
 Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
-### demarrer les conteneur
-__Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker (Même raison que pour la partie 3).
+### démarrer les conteneur
+__Attention__ on considère que il ya aucun autre conteneur de démarré. Pour que la configuration marche telle que représenté ci dessus il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur démarré dans docker (Même raison que pour la partie 3).
 ```
 Docker run -d --name jl_static res/jl_apache_php
 Docker run -d --name jl_dynamic res/jl_express_dynamic
 Docker run -d -p 8080:80 --name jl_apache_rp res/jl_apache_rp
 
 ```
-pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.ch:8080
+pour désormais accéder à notre site on peut accéder à l'URL suivante : `demo.res.ch:8080`
 
-on va envoyer une requete a notre serveur dynamique toute les 2 secondes, ensuite on récupère le premier élément de notre objet json retourné. Et on l'affecte dans notre page HTML
-dans notre cas les balises contenant la classe `.masthead-subheading` auront leurs contenu remplacé par des animeaux (:
+on va envoyer une requete a notre serveur dynamique toute les 2 secondes, ensuite on récupère le premier élément de notre objet json retourné. Et on l'affecte dans notre page HTML.
+
+Dans notre cas les balises contenant la classe `.masthead-subheading` aurront leurs contenu remplacé par des animaux :)
 
 ```js
 (function ($) {
@@ -270,12 +271,12 @@ Docker build -t res/jl_express_dynamic docker-images/express-image/
 Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
-### demarer les conteneur
-__Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut demarer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker
+### démarrer les conteneur
+__Attention__ on considère que il y a aucun autre conteneur de démarré. Pour que la configuration marche telle que représenté ci-dessous il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur démarré dans docker. Ou alors il faudra faire un `docker inspect` des 2 conteneurs crées et mettre leurs adresses en tant que argument lors de la création du conteneur du reverse proxy.
 ```
 Docker run -d --name jl_static res/jl_apache_php
 Docker run -d --name jl_dynamic res/jl_express_dynamic
-Docker run -d -e STATIC_APP=172.17.0.3 -e DYNAMIC_APP=172.17.0.2 -p 8080:80 --name jl_apache_rp res/jl_apache_rp
+Docker run -d -e STATIC_APP=172.17.0.2:8080 -e DYNAMIC_APP=172.17.0.3:3000 -p 8080:80 --name jl_apache_rp res/jl_apache_rp
 
 ```
 pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.ch:8080
