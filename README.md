@@ -193,7 +193,8 @@ Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
 ### démarrer les conteneurs
-__Attention__ on considère que il ya aucun autre conteneur de démarré. Pour que la configuration marche telle que représenté ci-dessus il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker.Effectivement les addresses sont alloué à chaque démarrage par docker et incrémenté dans l'ordre de démarrage avec la machine docker commençant à x.x.x.1. Vu que  nous addresses sont codés en dur il est important de lancer les conteneurs dans le bon ordre pour que le conteneur static se termine par `172.17.0.2` et que le conteneur dynamic par `172.17.0.3`.
+__Attention__ on considère que il ya aucun autre conteneur de démarré. Pour que la configuration marche telle que représenté ci-dessus il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker.
+Effectivement les addresses sont alloué à chaque démarrage par docker et incrémenté dans l'ordre de démarrage avec la machine docker commençant à x.x.x.1. Vu que  nos adresses sont codées en durs donc il est important de lancer les conteneurs dans le bon ordre pour que le conteneur static se termine ai l'adresse `172.17.0.2` et que le conteneur dynamic `172.17.0.3`.
 ```
 Docker run -d --name jl_static res/jl_apache_php
 Docker run -d --name jl_dynamic res/jl_express_dynamic
@@ -201,12 +202,12 @@ Docker run -d -p 8080:80 --name jl_apache_rp res/jl_apache_rp
 
 ```
 
-pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.ch:8080
+Il faudra également faire une modification DNS sur notre OS (fichier `hosts` sous Windows) pour mapper notre addresse `demo.res.ch` à notre adresse local `127.0.0.1`. UNe fois la modification faite on peut désormais accéder à notre site avec l'url suivante `demo.res.ch:8080`
 
-on peut effectivement voir aussi si on tente d'accéder aux serveurs statique et dynamique individuellement, ça ne marche pas.
+on peut effectivement voir aussi que si on essaye d'accéder aux serveurs statique et dynamique individuellement, ça ne marche pas.
 
 ### Mauvaise idée de configurer un site comme cela
-configurer notre site comme cela est très hasardeux car supposon que l'on démarre d'autre conteneur dans docker les adresses IP seront différente, alors il faudrai a chaque fois changer les adresses dans le fichier config de notre site pour qu'il soient à jour.
+configurer notre site comme cela est très hasardeux. Supposons que l'on démarre d'autre sconteneusr dans docker les adresses IP seront différente, alors il faudrai à chaque fois changer les adresses dans le fichier config de notre site pour qu'ils soient à jour.
 
 
 ## Step 4: AJAX requests with JQuery
