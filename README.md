@@ -46,8 +46,8 @@ COPY src /opt/app
 CMD ["node", "/opt/app/index.js"]
 ```
 
-Comme dans le **Dockerfile** on copie le contenu du dossier **/src** vers **/opt/app** il faudra avoir crée au préalable le dossier **/src** dans le même dossier que le **Dockerfile**. Il faut également avoir installé [node.js](https://nodejs.org/en/).
-Une fois ceci fait on peut lancer la commande (dans un terminal) ```npm init``` dans le dossier où l'on souhaite installer notre package (ici ça sera notre dossier **/src**). 
+Comme dans le `Dockerfile` on copie le contenu du dossier `/src` vers `/opt/app` il faudra avoir crée au préalable le dossier **/src** dans le même dossier que le **Dockerfile**. Il faut également avoir installé [node.js](https://nodejs.org/en/).
+Une fois ceci fait on peut lancer la commande (dans un terminal) ```npm init``` dans le dossier où l'on souhaite installer notre package (ici ça sera notre dossier `/src`). 
 En plus d'avoir installé node.js il nous faudra quelques compléments comme :
 
  - le module [chance](https://chancejs.com/usage/node.html)
@@ -151,12 +151,12 @@ Docker build -t res/jl_express_dynamic docker-images/express-image/
 Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
-## demarer les conteneur
-__Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut demarer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker
+## démarrer les conteneurs
+__Attention__ on considère que il ya aucun autre conteneur de démarré. Pour que la configuration marche telle que représenté ci-dessus il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker.Effectivement les addresses sont alloué à chaque démarrage par docker et incrémenté dans l'ordre de démarrage avec la machine docker commençant à x.x.x.1. Vu que  nous addresses sont codés en dur il est important de lancer les conteneurs dans le bon ordre pour que le conteneur static se termine par `172.17.0.2` et que le conteneur dynamic par `172.17.0.3`.
 ```
 Docker run -d --name jl_static res/jl_apache_php
 Docker run -d --name jl_dynamic res/jl_express_dynamic
-Docker run -d -p 8080:80 -p 3000:3000 --name jl_apache_rp res/jl_apache_rp
+Docker run -d -p 8080:80 --name jl_apache_rp res/jl_apache_rp
 
 ```
 
@@ -179,11 +179,11 @@ Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
 ## démarrer les conteneur
-__Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut demarer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker
+__Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker (Même raison que pour la partie 3).
 ```
 Docker run -d --name jl_static res/jl_apache_php
 Docker run -d --name jl_dynamic res/jl_express_dynamic
-Docker run -d -p 8080:80 -p 3000:3000 --name jl_apache_rp res/jl_apache_rp
+Docker run -d -p 8080:80 --name jl_apache_rp res/jl_apache_rp
 
 ```
 pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.ch:8080
@@ -259,7 +259,25 @@ en exécutant le fichier apache2-foreground on va exécuter le code php au déma
 ## Additional Setps : Load balancing multiple server nodes
 ### branche : fb-load-balancer
 Pour cette étape bonus nous nous sommes basés sur la documentation officielle apache de leurs [load balancer](https://httpd.apache.org/docs/2.4/fr/mod/mod_proxy_balancer.html)
-Donc nous avons modifié notre fichier `config-template-php` comme ceci :
+La documentation nous demande d'importer 3 modules nécessaire (`mod_proxy`, `mod_proxy_balancer` et un algorithme de planification de la répartition de tâche). Donc nous allons ajouter ces modules à notre `Dockerfile` de notre **reverse proxy** :
+
+```
+FROM php:7.4-apache
+
+RUN apt-get update && \
+	apt-get install -y vim
+	
+COPY apache2-foreground /usr/local/bin/
+COPY templates /var/apache2/templates
+COPY conf/ /etc/apache2
+
+RUN a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests
+RUN a2ensite 000-* 001-*
+
+RUN chmod +x /usr/local/bin/apache2-foreground
+```
+
+Nous allons également modifié notre fichier `config-template-php` comme ce que la documentation nous indique :
 
 ```php
 <?php
@@ -470,7 +488,7 @@ Démarre un nouveau conteneur, et lance son agent serf
 ```
 ./stop_all_container.sh nbstatic nbdynamic
 ```
-Arrête les conteneur crée avec le fichier `build_run.sh` de façon abrupte
+Arrête les conteneurs crées avec le fichier `build_run.sh` de façon abrupte
 
 --- 
 
@@ -538,4 +556,4 @@ les contrôles de bases
 * 	inspect : instpecter le conteneur
 * 	console : se connecter en interactif 
 
-on peut l'arrêter,démrraer , etc,etc
+on peut l'arrêter,démarrer , etc,etc
