@@ -178,7 +178,7 @@ Docker build -t res/jl_express_dynamic docker-images/express-image/
 Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
-## demarer les conteneur
+## démarrer les conteneur
 __Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut demarer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker
 ```
 Docker run -d --name jl_static res/jl_apache_php
@@ -331,7 +331,8 @@ La raison pourquoi nous donnons un nom au dernier container de chaque type nous 
 
 ## démarrer le conteneur reverse-proxy
 Effectivement Docker donne les adresses des containers en incrément dans l'ordre de création (la machine docker qui commence à x.x.x.1 donc le 1er container commence à x.x.x.2) 
-Dans notre cas de figure le container `jl_test_static` contient l'adresse `172.17.0.4` et le container `jl_test_dynamic` l'adresse `172.17.0.7` (Aucun autre container tourne au préalable). Donc pour lancer notre reverse proxy on va lancer :
+Dans notre cas de figure le container `jl_test_static` contient l'adresse `172.17.0.4` et le container `jl_test_dynamic` l'adresse `172.17.0.7` (Aucun autre container tourne au préalable). 
+Donc pour lancer notre reverse proxy on va lancer les addresses de chaque container static et dynamic:
 ```docker run -d -e STATIC_APP=172.17.0.2:80,172.17.0.3:80,172.17.0.4:80 -e DYNAMIC_APP=172.17.0.5:3000,172.17.0.6:3000,172.17.0.7:3000 --name jl_test_rp -p 8080:80 res/jl_apache_rp```
 
 Donc si on fait on docker ps on devrait avoir les 7 containers suivant qui tournent :
