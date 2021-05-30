@@ -26,7 +26,8 @@ Et de lancer on container en mappant un port au port http 80:
 ```
 docker run -it -p 8080:80 res/apache_php
 ```
-Maintenant si on ouvre un navigateur web et on écrit ``` localhost:8080``` on devrait avoir notre site html qui devrait s'afficher.
+Maintenant si on ouvre un navigateur web et on écrit ``` localhost:8080``` on devrait avoir notre site html qui devrait s'afficher :
+![image](./images/staticHTTP/htmlStaticSite.png)
 
 
 
