@@ -66,21 +66,21 @@ for ((i=0;i<$nbstatic;i++))
 do
     get_ip static$i
     docker exec static$i serf agent -node=serf-agent-static$i -bind=$ip_returned &
-    sleep 2
+    sleep 1
     docker exec static$i serf join $apache_rp_ip
-    echo $stat
+    sleep 1
     docker exec static$i serf event static-join '\'$ip_returned
-    sleep 2
+    sleep 1
 done
 
 for ((i=0;i<$nbdynamic;i++))
 do
     get_ip dynamic$i
     docker exec  dynamic$i serf agent -node=serf-agent-dynamic$i -bind=$ip_returned &
-    sleep 2
+    sleep 1
     docker exec dynamic$i serf join $apache_rp_ip
-     
+    sleep 1
     docker exec static$i serf event dynamic-join '\'$ip_returned
-    sleep 2
+    sleep 1
 done
 
