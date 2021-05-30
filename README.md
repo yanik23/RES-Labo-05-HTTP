@@ -1,8 +1,37 @@
+
+- [RES-Labo-05-HTTP](#res-labo-05-http)
+  * [Step 1: Static HTTP server with apache httpd](#step-1:-static-http-server-with-apache-httpd)
+  * [Step 2: Dynamic HTTP server with express.js](#step-2:-dynamic-http-server-with-expressjs)
+  * [Step 3: Reverse proxy with apache (static configuration)](#step-3:-reverse-proxy-with-apache-(static-configuration))
+    + [construire les images docker depuis la racine](#construire-les-images-docker-depuis-la-racine)
+    + [démarrer les conteneurs](#d-marrer-les-conteneurs)
+    + [Mauvaise idée de configurer un site comme cela](#mauvaise-id-e-de-configurer-un-site-comme-cela)
+  * [Step 4: AJAX requests with JQuery](#step-4:-ajax-requests-with-jquery)
+    + [construire les images docker depuis la racine](#construire-les-images-docker-depuis-la-racine-1)
+    + [démarrer les conteneur](#d-marrer-les-conteneur)
+  * [Step 5: Dynamic reverse proxy configuration](#step-5:-dynamic-reverse-proxy-configuration)
+    + [construire les images docker depuis la racine](#construire-les-images-docker-depuis-la-racine-2)
+    + [demarer les conteneur](#demarer-les-conteneur)
+    + [configuration](#configuration)
+    + [fichier template](#fichier-template)
+  * [Additional Setps : Load balancing multiple server nodes](#additional-setps-:-load-balancing-multiple-server-nodes)
+    + [construire les images docker depuis la racine](#construire-les-images-docker-depuis-la-racine-3)
+    + [démarrer les conteneur dynamic et static](#d-marrer-les-conteneur-dynamic-et-static)
+    + [démarrer le conteneur reverse-proxy](#d-marrer-le-conteneur-reverse-proxy)
+  * [Additional Steps : Dynamic cluster](#additional-steps-:-dynamic-cluster)
+    + [Configuration](#configuration)
+    + [Scripts complémentaires](#scripts-compl-mentaires)
+  * [Additional Steps : Management UI](#additional-steps-:-management-ui)
+    + [installation](#installation)
+    + [utilisation](#utilisation)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 # RES-Labo-05-HTTP
 Laboratoire HTTP Infrastructure du cours RES
 
 ## Step 1: Static HTTP server with apache httpd
-#### branche : fb-apache-static
+* __branche : fb-apache-static__
 
 Dans cette étape nous devions configurer un serveur http statique.
 Pour commencer nous avons crée un dossier `/apache-php-image`  dans un dossier `/docker-images` qui contiendra tout ce qui est nécessaire pour pouvoir créer une image docker d'un serveur `http statique`. 
@@ -32,7 +61,7 @@ Maintenant si on ouvre un navigateur web et on écrit ``` localhost:8080``` on d
 
 
 ## Step 2: Dynamic HTTP server with express.js
-#### branche : fb-express-dynamic
+* __branche : fb-express-dynamic__
 
 Dans cette étape nous devions configurer un serveur http dynamique.
 Pour commencer nous avons crée un nouveau dossier ```/express-image``` de nouveau dans le dossier `/docker-images` qui contiendra tout ce qui est nécessaire pour notre image docker du serveur **http dynamique**.
@@ -131,7 +160,7 @@ Ensuite il suffit de lancer la requête HTTP suivante `GET / HTTP/1.0` faire 2 r
 ![image](./images/dynamicHTTP/ncatJSON.png)
 
 ## Step 3: Reverse proxy with apache (static configuration)
-### branche : fb-apache-reverse-proxy
+* __branche : fb-apache-reverse-proxy__
 Dans cette partie nous devions implémenter un reverse proxy apache (en configuration static)
 
 configuration de base 
@@ -157,14 +186,14 @@ configurer notre site pour qu'il utilise le reverse proxy
 ```
 
 
-## construire les images docker depuis la racine 
+### construire les images docker depuis la racine 
 ```
 Docker build -t res/jl_apache_php docker-images/apache-php-image/
 Docker build -t res/jl_express_dynamic docker-images/express-image/
 Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
-## démarrer les conteneurs
+### démarrer les conteneurs
 __Attention__ on considère que il ya aucun autre conteneur de démarré. Pour que la configuration marche telle que représenté ci-dessus il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker.Effectivement les addresses sont alloué à chaque démarrage par docker et incrémenté dans l'ordre de démarrage avec la machine docker commençant à x.x.x.1. Vu que  nous addresses sont codés en dur il est important de lancer les conteneurs dans le bon ordre pour que le conteneur static se termine par `172.17.0.2` et que le conteneur dynamic par `172.17.0.3`.
 ```
 Docker run -d --name jl_static res/jl_apache_php
@@ -177,21 +206,21 @@ pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.
 
 on peut effectivement voir aussi si on tente d'accéder aux serveurs statique et dynamique individuellement, ça ne marche pas.
 
-## Mauvaise idée de configurer un site comme cela
+### Mauvaise idée de configurer un site comme cela
 configurer notre site comme cela est très hasardeux car supposon que l'on démarre d'autre conteneur dans docker les adresses IP seront différente, alors il faudrai a chaque fois changer les adresses dans le fichier config de notre site pour qu'il soient à jour.
 
 
 ## Step 4: AJAX requests with JQuery
-### branche : fb-ajax-jquery
+*  __branche : fb-ajax-jquery__
 
-## construire les images docker depuis la racine 
+### construire les images docker depuis la racine 
 ```
 Docker build -t res/jl_apache_php docker-images/apache-php-image/
 Docker build -t res/jl_express_dynamic docker-images/express-image/
 Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
-## démarrer les conteneur
+### demarrer les conteneur
 __Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker (Même raison que pour la partie 3).
 ```
 Docker run -d --name jl_static res/jl_apache_php
@@ -226,15 +255,15 @@ dans notre cas les balises contenant la classe `.masthead-subheading` auront leu
 ```
 
 ## Step 5: Dynamic reverse proxy configuration
-### branche : fb-dynamic-configuration
-## construire les images docker depuis la racine 
+* __branche : fb-dynamic-configuration__
+### construire les images docker depuis la racine 
 ```
 Docker build -t res/jl_apache_php docker-images/apache-php-image/
 Docker build -t res/jl_express_dynamic docker-images/express-image/
 Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
-## demarer les conteneur
+### demarer les conteneur
 __Attention__ on considère que il ya aucun autre conteneur de démarré, pour que la configuration marche telle que représenté ci dessus il faut demarer dans cet ordre spécifique, sans aucun autre conteneur de démarré dans docker
 ```
 Docker run -d --name jl_static res/jl_apache_php
@@ -244,14 +273,14 @@ Docker run -d -e STATIC_APP=172.17.0.3 -e DYNAMIC_APP=172.17.0.2 -p 8080:80 --na
 ```
 pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.ch:8080
 
-## configuration
+### configuration
 pour cette étape on dois creer des variables d'environnement dans notre conteneur. `STATIC_APP` et `DYNAMIC_APP`, ces dernier sont créer avec les paramètre -e lors d'un `docker run`
 
 en exécutant le fichier apache2-foreground on va exécuter le code php au démarage de notre conteneur, et écrire dans le fichier de configuration de notre site web, les adresses IP pour notre proxy seront alors injecté correctement.
 
 
 
-## fichier template
+### fichier template
 ```php
 <?php
 	$dynamic_app = getenv('DYNAMIC_APP');
@@ -270,7 +299,7 @@ en exécutant le fichier apache2-foreground on va exécuter le code php au déma
 
 
 ## Additional Setps : Load balancing multiple server nodes
-### branche : fb-load-balancer
+*  __branche : fb-load-balancer__
 Pour cette étape bonus nous nous sommes basés sur la documentation officielle apache de leurs [load balancer](https://httpd.apache.org/docs/2.4/fr/mod/mod_proxy_balancer.html)
 La documentation nous demande d'importer 3 modules nécessaire (`mod_proxy`, `mod_proxy_balancer` et un algorithme de planification de la répartition de tâche). Donc nous allons ajouter ces modules à notre `Dockerfile` de notre **reverse proxy** :
 
@@ -341,14 +370,14 @@ Nous allons également modifié notre fichier `config-template-php` comme ce que
 ```
 Pour tester le bon fonctionnement nous allons remonter l'image de notre reverse-proxy (et du site static et dynamic si ce n'est pas déja fait) et essayer avec 3 noeuds static et 3 noeuds dynamic.
 
-## construire les images docker depuis la racine 
+### construire les images docker depuis la racine 
 ```
 Docker build -t res/jl_apache_php docker-images/apache-php-image/
 Docker build -t res/jl_express_dynamic docker-images/express-image/
 Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
-## démarrer les conteneur dynamic et static
+### démarrer les conteneur dynamic et static
 ```
 docker run -d res/jl_apache_php
 docker run -d res/jl_apache_php
@@ -360,7 +389,7 @@ docker run -d --name jl_test_dynamic res/jl_express_dynamic
 La raison pourquoi nous donnons un nom au dernier container de chaque type nous permet de vérifier à partir de quand les addresse static s'arrêtent et quand celles des dynamic commencent (Important pour la suite). 
 
 
-## démarrer le conteneur reverse-proxy
+### démarrer le conteneur reverse-proxy
 Effectivement Docker donne les adresses des containers en incrément dans l'ordre de création (la machine docker qui commence à x.x.x.1 donc le 1er container commence à x.x.x.2) 
 Dans notre cas de figure le container `jl_test_static` contient l'adresse `172.17.0.4` et le container `jl_test_dynamic` l'adresse `172.17.0.7` (Aucun autre container tourne au préalable). 
 Donc pour lancer notre reverse proxy on va lancer les addresses de chaque container static et dynamic:
@@ -376,7 +405,7 @@ Maintenant si on lance notre site avec l'URL suivante : ```http://demo.res.ch:80
 Nous remarquons que la colonne `MaxMembers` nous donne le nombre de container mais également le nombre utilisé. Ici on voit que tous nos containers sont utilisés car notre **Load Balancer** reparti les charges correctement entre les containers.
 
 ## Additional Steps : Dynamic cluster
-### branche : fb-dynamic_cluster
+*  __branche : fb-dynamic_cluster__
 
 On est partis sur une configuration avec serf
 
@@ -385,7 +414,7 @@ On est partis sur une configuration avec serf
 ### Configuration
 
 
-#### __fichier__ `clusterHandler.sh`
+* __fichier__ `clusterHandler.sh`
 
 
 
@@ -431,7 +460,7 @@ dynamic-join)
 
 ---
 
-#### __fichier__ `failHandler.sh`
+* __fichier__ `failHandler.sh`
 quand un noeud crash l'agent serf du reverse proxy vas executer ce fichier, il va supprimer de la liste des balancerMember l'entrée qui correspond à l'ip qui á échoué
 pas besoin de précisier si c'etais un serveur statique ou dynamique
 ```sh
@@ -440,21 +469,21 @@ pas besoin de précisier si c'etais un serveur statique ou dynamique
 	apachectl -k graceful
 ```
 ---
-#### __fichier__ `config-template.php`
+* __fichier__ `config-template.php`
 les contenu des Proxy sont vide au début car les addresses sont insérée au démarage d'un serveur et plus précisément après un evenment utilisateur `serf` de type `static-join` ou `dynamic-join`
 
 ---
 
 
 ### Scripts complémentaires
-#### __fichier__ : `build_run.sh` 
+* __fichier__ : `build_run.sh` 
 ```
 ./build_run.sh N M
 ```
 Ce fichier va s'occuper de creer `N` conteneurs statique et `M` conteneurs dynamique, tout en démarant les services `serfs` dans chaque conteneur adapté
 
 --- 
-#### __fichier__ : `get_rp_config.sh` 
+* __fichier__ : `get_rp_config.sh` 
 ```
 ./get_rp_ip_config.sh
 ```
@@ -462,42 +491,42 @@ Ce fichier va s'occuper de creer `N` conteneurs statique et `M` conteneurs dynam
 retourne le contenu du fichier configuration `001-reverse-proxy.conf`
 
 --- 
-#### __fichier__ : `getip.sh` 
+* __fichier__ : `getip.sh` 
 ```
 ./getip.sh
 ```
 retourne les addresses ip de tout les conteneurs docker qui tournent sur la machine
 
 --- 
-#### __fichier__ : `gracefull_Stop.sh` 
+* __fichier__ : `gracefull_Stop.sh` 
 ```
 ./gracefull_stop.sh containername
 ```
 arrête proprement le `containername`, fait un simple appel à docker stop `containername `
 
 --- 
-#### __fichier__ : `remove_container.sh` 
+* __fichier__ : `remove_container.sh` 
 ```
 ./remove_container.sh containername
 ```
 supprime le `containername`, fait un simple appel à docker rm `containername`
 
 --- 
-#### __fichier__ : `start_container.sh` 
+* __fichier__ : `start_container.sh` 
 ```
 ./start_container.sh containername static|dynamic
 ```
 Démarre un conteneur précédement arrêté, et relance son agent serf
 
 --- 
-#### __fichier__ : `start_new_container.sh` 
+* __fichier__ : `start_new_container.sh` 
 ```
 ./start_new_container.sh containername static|dynamic
 ```
 Démarre un nouveau conteneur, et lance son agent serf
 
 --- 
-#### __fichier__ : `stop_all_container.sh` 
+* __fichier__ : `stop_all_container.sh` 
 ```
 ./stop_all_container.sh nbstatic nbdynamic
 ```
@@ -505,18 +534,18 @@ Arrête les conteneurs crées avec le fichier `build_run.sh` de façon abrupte
 
 --- 
 
-### validation 
+* validation 
 
-* `./build_run.sh 2 2`
-* attendre la fin de l'exécution
-* ouvrir un navigateur à : demo.res.ch:8080/balancer-manager
-* vérifier si les balancerMember sont présent
-* `docker kill static1`
-* rafraichir : demo.res.ch:8080/balancer-manager
-* l'entrée correspondant a static1 est plus présent
-* `./start_new_containre.sh new_node static`
-* une nouvelle addresse ip dans les entrée de staticBalancer
-* tester le fonctionnement du site : demo.res.ch:8080
+	* `./build_run.sh 2 2`
+	* attendre la fin de l'exécution
+	* ouvrir un navigateur à : demo.res.ch:8080/balancer-manager
+	* vérifier si les balancerMember sont présent
+	* `docker kill static1`
+	* rafraichir : demo.res.ch:8080/balancer-manager
+	* l'entrée correspondant a static1 est plus présent
+	* `./start_new_containre.sh new_node static`
+	* une nouvelle addresse ip dans les entrée de staticBalancer
+	* tester le fonctionnement du site : demo.res.ch:8080
 
 --- 
 
