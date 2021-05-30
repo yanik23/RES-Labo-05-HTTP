@@ -11,23 +11,23 @@
 	
 	ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
-	
 	<Proxy balancer://dynamicBalancer>
-<?php
-	foreach ($dynamic_app as &$dynamicIp){
-		echo "	BalancerMember http://". $dynamicIp . "\n";
-	}
-?>
+
+	#dynamicBalancer
 	</Proxy>
 	
 	<Proxy balancer://staticBalancer>
-<?php
-	foreach ($static_app as &$staticIp){
-		echo "	BalancerMember http://". $staticIp . "\n";
-	}
-?>
+
+	#staticBalancer
 	</Proxy>
 	
+	<Location /balancer-manager>
+		SetHandler balancer-manager
+		Order Deny,Allow
+		Allow from all
+	</Location>
+
+	ProxyPass /balancer-manager !
 	
 	ProxyPass '/api/animals/' 'balancer://dynamicBalancer/'
 	ProxyPassReverse '/api/animals/' 'balancer://dynamicBalancer/'
