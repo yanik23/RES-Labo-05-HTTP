@@ -48,6 +48,8 @@ CMD ["node", "/opt/app/index.js"]
 ```
 
 Comme dans le `Dockerfile` on copie le contenu du dossier `/src` vers `/opt/app` il faudra avoir crée au préalable le dossier `/src` dans le même dossier que le `Dockerfile`. Il faut également avoir installé [node.js](https://nodejs.org/en/).
+La dernière ligne de notre `Dockerfile` permettra de lancer index.js avec **node**.
+
 Une fois ceci fait on peut lancer la commande (dans un terminal) ```npm init``` dans le dossier où l'on souhaite installer notre package (ici ça sera notre dossier `/src`). 
 En plus d'avoir installé node.js il nous faudra quelques compléments comme :
 
