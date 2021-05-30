@@ -131,12 +131,12 @@ Ensuite il suffit de lancer la requête HTTP suivante `GET / HTTP/1.0` faire 2 r
 ![image](./images/dynamicHTTP/ncatJSON.png)
 
 ## Step 3: Reverse proxy with apache (static configuration)
-### branche : fb-express-dynamic
+### branche : fb-apache-reverse-proxy
 Dans cette partie nous devions implémenter un reverse proxy apache (en configuration static)
 
 configuration de base 
-pour configurer un simple reverse proxy il faut avoir les modules apache correct instalé
-ces derniers sont activé via le docker file 
+pour configurer un simple reverse proxy il faut avoir les modules apache correctement installés
+ces derniers sont activés via le `Dockerfile` 
 ```
 RUN a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests
 RUN a2ensite 000-* 001-*
