@@ -5,9 +5,9 @@
 <VirtualHost *:80>
 	ServerName demo.res.ch
 	
-	ProxyPass '/api/animals/' 'http://<?php print "$dynamic_app"?>:3000/'
-	ProxyPassReverse '/api/animals/' 'http://<?php print "$dynamic_app"?>:3000/'
+	ProxyPass '/api/animals/' 'http://<?php print "$dynamic_app"?>/'
+	ProxyPassReverse '/api/animals/' 'http://<?php print "$dynamic_app"?>/'
 	
-	ProxyPass '/' 'http://<?php print "$static_app"?>:80/'
-	ProxyPassReverse '/' 'http://<?php print "$static_app"?>:80/'	
+	ProxyPass '/' 'http://<?php print "$static_app"?>/'
+	ProxyPassReverse '/' 'http://<?php print "$static_app"?>/'	
 </VirtualHost>
