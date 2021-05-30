@@ -28,6 +28,13 @@
 ?>
 	</Proxy>
 	
+	<Location /balancer-manager>
+        SetHandler balancer-manager
+        Order Deny,Allow
+        Allow from all
+    </Location>
+
+    ProxyPass /balancer-manager !
 	
 	ProxyPass '/api/animals/' 'balancer://dynamicBalancer/'
 	ProxyPassReverse '/api/animals/' 'balancer://dynamicBalancer/'
