@@ -258,3 +258,200 @@ en exécutant le fichier apache2-foreground on va exécuter le code php au déma
 
 ## Additional Setps : Load balancing multiple server nodes
 ### branche : fb-load-balancer
+
+
+## Additional Steps : Dynamic cluster
+### branche : fb-dynamic_cluster
+
+On est partis sur une configuration avec serf
+
+
+
+### Configuration
+
+
+#### __fichier__ `clusterHandler.sh`
+
+
+
+Ce fichier est lié aux évènements de l'agent serf qui tourne sur le reverse proxy,
+il sera exécuté a chaque fois que un nouveau serveur arrive dans le cluster
+
+les évènements utilsateurs à envoyer pour que ce script soit exécuté sont:
+```
+serf event static-join [addresse_ip]
+serf event dynamic-join [addresse_ip]
+```
+le payload [addresse_ip] est lu par le fichier (`read ip`) et une nouvelle entrée sera crée
+_exemple_
+```
+serf event static-join 172.17.0.4
+#serf event recieved -> static_join
+#execution du script
+#insertion dans le fichier conf
+
+#resultat :
+<Proxy balancer://staticBalancer>
+	BalancerMember http://172.17.0.4:80 <----ip rajouté (avant le #staticBalancer)
+#staticBalancer
+</Proxy>
+``` 
+
+il va mettre a jour le fichier configuration de notre site en ajoutant une entrée dans les balancer
+
+
+```sh
+static-join)
+		read ip
+		$(sed -i "/#staticBalancer/i\BalancerMember http:\/\/$ip:80" /etc/apache2/sites-enabled/001-reverse-proxy.conf)
+		apachectl -k graceful
+;;
+dynamic-join)
+		read ip
+		$(sed -i "/#dynamicBalancer/i\BalancerMember http:\/\/$ip:3000" /etc/apache2/sites-enabled/001-reverse-proxy.conf)
+		apachectl -k graceful
+;; 
+```
+
+
+---
+
+#### __fichier__ `failHandler.sh`
+quand un noeud crash l'agent serf du reverse proxy vas executer ce fichier, il va supprimer de la liste des balancerMember l'entrée qui correspond à l'ip qui á échoué
+pas besoin de précisier si c'etais un serveur statique ou dynamique
+```sh
+	read name ip
+	$(sed -i "/$ip/d"  /etc/apache2/sites-enabled/001-reverse-proxy.conf)
+	apachectl -k graceful
+```
+---
+#### __fichier__ `config-template.php`
+les contenu des Proxy sont vide au début car les addresses sont insérée au démarage d'un serveur et plus précisément après un evenment utilisateur `serf` de type `static-join` ou `dynamic-join`
+
+---
+
+
+### Scripts complémentaires
+#### __fichier__ : `build_run.sh` 
+```
+./build_run.sh N M
+```
+Ce fichier va s'occuper de creer `N` conteneurs statique et `M` conteneurs dynamique, tout en démarant les services `serfs` dans chaque conteneur adapté
+
+--- 
+#### __fichier__ : `get_rp_config.sh` 
+```
+./get_rp_ip_config.sh
+```
+
+retourne le contenu du fichier configuration `001-reverse-proxy.conf`
+
+--- 
+#### __fichier__ : `getip.sh` 
+```
+./getip.sh
+```
+retourne les addresses ip de tout les conteneurs docker qui tournent sur la machine
+
+--- 
+#### __fichier__ : `gracefull_Stop.sh` 
+```
+./gracefull_stop.sh containername
+```
+arrête proprement le `containername`, fait un simple appel à docker stop `containername `
+
+--- 
+#### __fichier__ : `remove_container.sh` 
+```
+./remove_container.sh containername
+```
+supprime le `containername`, fait un simple appel à docker rm `containername`
+
+--- 
+#### __fichier__ : `start_container.sh` 
+```
+./start_container.sh containername static|dynamic
+```
+Démarre un conteneur précédement arrêté, et relance son agent serf
+
+--- 
+#### __fichier__ : `start_new_container.sh` 
+```
+./start_new_container.sh containername static|dynamic
+```
+Démarre un nouveau conteneur, et lance son agent serf
+
+--- 
+#### __fichier__ : `stop_all_container.sh` 
+```
+./stop_all_container.sh nbstatic nbdynamic
+```
+Arrête les conteneur crée avec le fichier `build_run.sh` de façon abrupte
+
+--- 
+
+### validation 
+
+* `./build_run.sh 2 2`
+* attendre la fin de l'exécution
+* ouvrir un navigateur à : demo.res.ch:8080/balancer-manager
+* vérifier si les balancerMember sont présent
+* `docker kill static1`
+* rafraichir : demo.res.ch:8080/balancer-manager
+* l'entrée correspondant a static1 est plus présent
+* `./start_new_containre.sh new_node static`
+* une nouvelle addresse ip dans les entrée de staticBalancer
+* tester le fonctionnement du site : demo.res.ch:8080
+
+--- 
+
+## Additional Steps : Management UI
+Nous avons décidé de utilser l'interface web [portainer](https://www.portainer.io/)
+
+### installation
+
+```
+docker run -d -p 9000:9000 -p 8000:8000 --name portainer -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer-ce --admin-password='$2y$05$qFHAlNAH0A.6oCDe1/4W.ueCWC/iTfBMXIHBI97QYfMWlMCJ7N.a6'
+
+```
+
+cette commande va installer la version community édition de portainer, elle sera démaré avec le service docker à chaque démarrage
+
+### utilisation
+
+![image](./images/portainer/login.png)
+* username : admin
+* password : password
+---
+selectionner docker ensuite connectez vous
+![image](./images/portainer/connect_docker.png)
+
+---
+selectionnez local
+![image](./images/portainer/endpoints.png)
+
+--- 
+
+![image](./images/portainer/dashboard.png)
+
+* containers : afficher tout les conteneurs disponibles
+
+* images : affiche toute les images disponibles
+---
+
+gérer un conteneur
+
+on utilise un conteneur test statique 
+```
+docker run -d -p 8080:80 --name test res/jl_apache_php
+```
+![image](./images/portainer/new_container_test.png)
+cliquez sur test
+![image](./images/portainer/test_container.png)
+maintenant on peut gérer notre conteneur graphiquement,
+les contrôles de bases
+*	logs : affiche les logs du conteneur
+* 	inspect : instpecter le conteneur
+* 	console : se connecter en interactif 
+
+on peut l'arrêter,démrraer , etc,etc
