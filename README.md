@@ -338,9 +338,7 @@ Nous allons également modifier notre fichier `config-template-php` comme ce que
 
 	$dynamic_app = explode(',', getenv('DYNAMIC_APP'));
 	$static_app = explode(',', getenv('STATIC_APP'));
-	
-	//$dynamic_app = getenv('DYNAMIC_APP');
-	//$static_app = getenv('STATIC_APP');
+
 ?>
 <VirtualHost *:80>
 	ServerName demo.res.ch
@@ -398,7 +396,7 @@ docker run -d res/jl_express_dynamic
 docker run -d res/jl_express_dynamic
 docker run -d --name jl_test_dynamic res/jl_express_dynamic
 ```
-La raison pourquoi nous donnons un nom au dernier container de chaque type nous permet de vérifier à partir de quand les addresse static s'arrêtent et quand celles des dynamic commencent (Important pour la suite). 
+La raison pourquoi nous donnons un nom au dernier container de chaque type nous permet de vérifier à partir de quand les adresses static s'arrêtent et quand celles des dynamic commencent (Important pour la suite). 
 
 
 ### démarrer le conteneur reverse-proxy
