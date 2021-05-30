@@ -263,6 +263,8 @@ Dans notre cas les balises contenant la classe `.masthead-subheading` aurront le
 ```
 
 ## Step 5: Dynamic reverse proxy configuration
+Dans cette partie nous voulions plus avoir les adresses codées en durs mais les fournir lors de la création du conteneur du reverse proxy en tant que variables d'environnement.
+
 * __branche : fb-dynamic-configuration__
 ### construire les images docker depuis la racine 
 ```
@@ -272,20 +274,21 @@ Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
 ```
 
 ### démarrer les conteneur
-__Attention__ on considère que il y a aucun autre conteneur de démarré. Pour que la configuration marche telle que représenté ci-dessous il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur démarré dans docker. Ou alors il faudra faire un `docker inspect` des 2 conteneurs crées et mettre leurs adresses en tant que argument lors de la création du conteneur du reverse proxy.
+__Attention__ on considère qu' il y a aucun autre conteneur de démarré. Pour que la configuration marche telle que représenté ci-dessous il faut démarrer dans cet ordre spécifique, sans aucun autre conteneur démarré dans docker. Ou alors il faudra faire un `docker inspect` des 2 conteneurs crées et mettre leurs adresses en tant que argument lors de la création du conteneur du reverse proxy.
 ```
 Docker run -d --name jl_static res/jl_apache_php
 Docker run -d --name jl_dynamic res/jl_express_dynamic
 Docker run -d -e STATIC_APP=172.17.0.2:80 -e DYNAMIC_APP=172.17.0.3:3000 -p 8080:80 --name jl_apache_rp res/jl_apache_rp
 
 ```
-pour désormais accéder a notre site on peut acceder á l'url suivant demo.res.ch:8080
+On peut maintenant accéder notre site via l'URL suivante :  `demo.res.ch:8080`
 
 ### configuration
-pour cette étape on dois creer des variables d'environnement dans notre conteneur. `STATIC_APP` et `DYNAMIC_APP`, ces dernier sont créer avec les paramètre -e lors d'un `docker run`
+pour cette étape on doit créer des variables d'environnement dans notre conteneur. `STATIC_APP` et `DYNAMIC_APP`, ces dernières sont crées avec les paramètre -e lors d'un `docker run`.
 
-en exécutant le fichier apache2-foreground on va exécuter le code php au démarage de notre conteneur, et écrire dans le fichier de configuration de notre site web, les adresses IP pour notre proxy seront alors injecté correctement.
-
+En exécutant le fichier `apache2-foreground` on va exécuter le code php au démarrage de notre conteneur, et écrire dans le fichier de configuration de notre site web, les adresses IP pour notre proxy seront alors injectées correctement.
+(Pour être sûr que `apache2-foreground` s'éxecute correctement par rapport aux droits d'accès, il faudra ajouter la ligne suivante à notre `Dockerfile` :
+`RUN chmod +x /usr/local/bin/apache2-foreground`)
 
 
 ### fichier template
@@ -308,7 +311,7 @@ en exécutant le fichier apache2-foreground on va exécuter le code php au déma
 
 ## Additional Setps : Load balancing multiple server nodes
 *  __branche : fb-load-balancer__
-Pour cette étape bonus nous nous sommes basés sur la documentation officielle apache de leurs [load balancer](https://httpd.apache.org/docs/2.4/fr/mod/mod_proxy_balancer.html)
+Pour cette étape bonus nous nous sommes basé sur la documentation officielle apache de leurs [load balancer](https://httpd.apache.org/docs/2.4/fr/mod/mod_proxy_balancer.html)
 La documentation nous demande d'importer 3 modules nécessaire (`mod_proxy`, `mod_proxy_balancer` et un algorithme de planification de la répartition de tâche). Donc nous allons ajouter ces modules à notre `Dockerfile` de notre **reverse proxy** :
 
 ```
@@ -327,7 +330,7 @@ RUN a2ensite 000-* 001-*
 RUN chmod +x /usr/local/bin/apache2-foreground
 ```
 
-Nous allons également modifié notre fichier `config-template-php` comme ce que la documentation nous indique :
+Nous allons également modifier notre fichier `config-template-php` comme ce que la documentation nous indique :
 
 ```php
 <?php
