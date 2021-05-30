@@ -335,11 +335,13 @@ Dans notre cas de figure le container `jl_test_static` contient l'adresse `172.1
 ```docker run -d -e STATIC_APP=172.17.0.2:80,172.17.0.3:80,172.17.0.4:80 -e DYNAMIC_APP=172.17.0.5:3000,172.17.0.6:3000,172.17.0.7:3000 --name jl_test_rp -p 8080:80 res/jl_apache_rp```
 
 Donc si on fait on docker ps on devrait avoir les 7 containers suivant qui tournent :
-
+![image](./images/loadBalancer/dockerPSLoadBalancer.png)
 
 
 Maintenant si on lance notre site avec l'URL suivante : ```http://demo.res.ch:8080/balancer-manager/``` on a un interface web pour vérifier le bon fonctionnement de notre load balancer :
+![image](./images/loadBalancer/loadBalancerManager.png)
 
+Nous remarquons que la colonne `MaxMembers` nous donne le nombre de container mais également le nombre utilisé. Ici on voit que tous nos containers sont utilisés car notre **Load Balancer** reparti les charges correctement entre les containers.
 
 ## Additional Steps : Dynamic cluster
 ### branche : fb-dynamic_cluster
