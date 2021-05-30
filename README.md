@@ -263,9 +263,9 @@ Dans notre cas les balises contenant la classe `.masthead-subheading` aurront le
 ```
 
 ## Step 5: Dynamic reverse proxy configuration
-Dans cette partie nous voulions plus avoir les adresses codées en durs mais les fournir lors de la création du conteneur du reverse proxy en tant que variables d'environnement.
-
 * __branche : fb-dynamic-configuration__
+
+Dans cette partie nous voulions plus avoir les adresses codées en durs mais les fournir lors de la création du conteneur du reverse proxy en tant que variables d'environnement.
 ### construire les images docker depuis la racine 
 ```
 Docker build -t res/jl_apache_php docker-images/apache-php-image/
