@@ -3,8 +3,6 @@
 	$dynamic_app = explode(',', getenv('DYNAMIC_APP'));
 	$static_app = explode(',', getenv('STATIC_APP'));
 	
-	//$dynamic_app = getenv('DYNAMIC_APP');
-	//$static_app = getenv('STATIC_APP');
 ?>
 <VirtualHost *:80>
 	ServerName demo.res.ch
