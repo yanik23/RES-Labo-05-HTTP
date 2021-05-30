@@ -258,6 +258,87 @@ en exécutant le fichier apache2-foreground on va exécuter le code php au déma
 
 ## Additional Setps : Load balancing multiple server nodes
 ### branche : fb-load-balancer
+Pour cette étape bonus nous nous sommes basés sur la documentation officielle apache de leurs [load balancer](https://httpd.apache.org/docs/2.4/fr/mod/mod_proxy_balancer.html)
+Donc nous avons modifié notre fichier `config-template-php` comme ceci :
+
+```php
+<?php
+
+	$dynamic_app = explode(',', getenv('DYNAMIC_APP'));
+	$static_app = explode(',', getenv('STATIC_APP'));
+	
+	//$dynamic_app = getenv('DYNAMIC_APP');
+	//$static_app = getenv('STATIC_APP');
+?>
+<VirtualHost *:80>
+	ServerName demo.res.ch
+	
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+	
+	<Proxy balancer://dynamicBalancer>
+<?php
+	foreach ($dynamic_app as &$dynamicIp){
+		echo "	BalancerMember http://". $dynamicIp . "\n";
+	}
+?>
+	</Proxy>
+	
+	<Proxy balancer://staticBalancer>
+<?php
+	foreach ($static_app as &$staticIp){
+		echo "	BalancerMember http://". $staticIp . "\n";
+	}
+?>
+	</Proxy>
+	
+   <Location /balancer-manager>
+        SetHandler balancer-manager
+        Order Deny,Allow
+        Allow from all
+    </Location>
+
+    ProxyPass /balancer-manager !
+	
+	ProxyPass '/api/animals/' 'balancer://dynamicBalancer/'
+	ProxyPassReverse '/api/animals/' 'balancer://dynamicBalancer/'
+	
+	ProxyPass '/' 'balancer://staticBalancer/'
+	ProxyPassReverse '/' 'balancer://staticBalancer/'
+	
+</VirtualHost>
+```
+Pour tester le bon fonctionnement nous allons remonter l'image de notre reverse-proxy (et du site static et dynamic si ce n'est pas déja fait) et essayer avec 3 noeuds static et 3 noeuds dynamic.
+
+## construire les images docker depuis la racine 
+```
+Docker build -t res/jl_apache_php docker-images/apache-php-image/
+Docker build -t res/jl_express_dynamic docker-images/express-image/
+Docker build -t res/jl_apache_rp docker-images/apache-reverse-proxy/
+```
+
+## démarrer les conteneur dynamic et static
+```
+docker run -d res/jl_apache_php
+docker run -d res/jl_apache_php
+docker run -d --name jl_test_static res/jl_apache_php
+docker run -d res/jl_express_dynamic
+docker run -d res/jl_express_dynamic
+docker run -d --name jl_test_dynamic res/jl_express_dynamic
+```
+La raison pourquoi nous donnons un nom au dernier container de chaque type nous permet de vérifier à partir de quand les addresse static s'arrêtent et quand celles des dynamic commencent (Important pour la suite). 
+
+
+## démarrer le conteneur reverse-proxy
+Effectivement Docker donne les adresses des containers en incrément dans l'ordre de création (la machine docker qui commence à x.x.x.1 donc le 1er container commence à x.x.x.2) 
+Dans notre cas de figure le container `jl_test_static` contient l'adresse `172.17.0.4` et le container `jl_test_dynamic` l'adresse `172.17.0.7` (Aucun autre container tourne au préalable). Donc pour lancer notre reverse proxy on va lancer :
+```docker run -d -e STATIC_APP=172.17.0.2:80,172.17.0.3:80,172.17.0.4:80 -e DYNAMIC_APP=172.17.0.5:3000,172.17.0.6:3000,172.17.0.7:3000 --name jl_test_rp -p 8080:80 res/jl_apache_rp```
+
+Donc si on fait on docker ps on devrait avoir les 7 containers suivant qui tournent :
+
+
+
+Maintenant si on lance notre site avec l'URL suivante : ```http://demo.res.ch:8080/balancer-manager/``` on a un interface web pour vérifier le bon fonctionnement de notre load balancer :
 
 
 ## Additional Steps : Dynamic cluster
